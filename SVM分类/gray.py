@@ -10,6 +10,10 @@ from skimage.feature import greycoprops as gp
 import random as rd
 import pandas as pd
 from glob import glob
+from sklearn.model_selection import train_test_split
+from sklearn import datasets
+from sklearn import svm
+from sklearn.preprocessing import  StandardScaler
 
 from sklearn import svm
 
@@ -213,6 +217,28 @@ def getxy(file,savex,savey):
 #getxy(file,'x_train.csv','y_train.csv')
 
 
+#此函数将test_a中的数据形成灰度共生矩阵保存在一个文件夹中
+def get_test_x(file,save_gray,save_test_name):
+    img_feature=[]
+    #用于存放test的编号和名称
+    img_test_name=[]
+    img_set=os.listdir(file)
+    for img_num in range(len(img_set)):
+        #获取灰度共生矩阵的特征并保存到img_feature中
+        img_feature.append(get_feature(file+'\\'+img_set[img_num]))
+        img_test_name.append(img_set[img_num])
+    #将img_feature保存到csv文件中
+    img_feature=pd.DataFrame(img_feature)
+    img_test_name=pd.DataFrame(img_test_name)
+    img_feature.to_csv('C:\\homework\\tianchi\\' + save_gray, mode='a', header=None, index=None)
+    img_test_name.to_csv('C:\\homework\\tianchi\\' + save_test_name, mode='a', header=None, index=None)
+
+
+
+
+
+
+
 
 
 
@@ -229,10 +255,67 @@ x_test = np.array(pd.read_csv('D:\\1.3\\40s\\x_test.csv',header = None))
 y_test = np.array(pd.read_csv('D:\\1.3\\40s\\y_test.csv',header = None))
 '''
 
+#预处理数据
+x_train=StandardScaler().fit_transform(x_train)
+
+#使用交叉验证法进行整理数据
+X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.4, random_state=0)
+
+
+
+
+
 #训练
-clf = svm.SVC(kernel = 'linear',C=0.5,degree = 4)
-clf.fit(x_train, y_train.ravel())
+clf = svm.SVC(kernel = 'linear',C=0.5,degree = 4,probability=True)
+clf.fit(X_train, y_train.ravel())
+
+
 
 
 #得到结果
-print(clf.score(x_train,y_train))
+print(clf.score(X_train,y_train))
+print(clf.score(X_test,y_test))
+
+
+#使用该模型进行预测
+# file='C:\\homework\\xuelang_round1_test_a_20180709'
+# get_test_x(file,'test_gray.csv','test_img_name.csv')
+#预测得到的结果保存到csv文件中
+# x_test=np.array(pd.read_csv('C:\\homework\\tianchi\\test_gray.csv',header = None))
+# x_test=StandardScaler().fit_transform(x_test)
+#
+# y_test=clf.predict(x_test)
+# prob=clf.predict_proba(x_test)
+# #获取概率的最大值
+# prob_max=[]
+# for i in range(len(prob)):
+#     prob_max.append(max(prob[i]))
+#
+# print(y_test)
+#
+# print(prob_max)
+# print('完毕')
+# #将文件的名称和可能性拼接成一个完整的csv文件
+# img_test_name=np.array(pd.read_csv('C:\\homework\\tianchi\\test_img_name.csv',header = None))
+# #获取两者的shape
+# print(img_test_name.shape)
+# prob_max=np.array(prob_max)
+# prob_max=prob_max.reshape(662,1)
+#
+# print(prob_max.shape)
+#
+# result=np.hstack([img_test_name,prob_max])
+# head=['filename','probability']
+# #result=np.vstack(head,result)
+# result=pd.DataFrame(result)
+# result.to_csv('C:\\homework\\tianchi\\result.csv', mode='a', header=head, index=None)
+# print('结果输出完毕')
+
+
+
+
+
+
+
+
+
