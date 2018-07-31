@@ -248,18 +248,18 @@ l1 = get_xy('D:\\1.3\\40s','x_train.csv','y_train.csv')
 l2 = get_xy('D:\\1.3\\40s\\test','x_test.csv','y_test.csv')
 '''
 #读取训练集和测试集
-x_train = np.array(pd.read_csv('C:\\homework\\tianchi\\x_train.csv',header = None))
-y_train = np.array(pd.read_csv('C:\\homework\\tianchi\\y_train.csv',header = None))
+X_train = np.array(pd.read_csv('C:\\homework\\tianchi\\x_train.csv',header = None))
+Y_train = np.array(pd.read_csv('C:\\homework\\tianchi\\y_train.csv',header = None))
 '''
 x_test = np.array(pd.read_csv('D:\\1.3\\40s\\x_test.csv',header = None))
 y_test = np.array(pd.read_csv('D:\\1.3\\40s\\y_test.csv',header = None))
 '''
 
 #预处理数据
-x_train=StandardScaler().fit_transform(x_train)
+X_train=StandardScaler().fit_transform(X_train)
 
 #使用交叉验证法进行整理数据
-X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.4, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(X_train,Y_train, test_size=0.4, random_state=0)
 
 
 
@@ -267,49 +267,52 @@ X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=
 
 #训练
 clf = svm.SVC(kernel = 'linear',C=0.5,degree = 4,probability=True)
-clf.fit(X_train, y_train.ravel())
+clf.fit(x_train, y_train.ravel())
 
 
 
 
 #得到结果
-print(clf.score(X_train,y_train))
-print(clf.score(X_test,y_test))
+print(clf.score(x_train,y_train))
+print(clf.score(x_test,y_test))
 
 
 #使用该模型进行预测
-# file='C:\\homework\\xuelang_round1_test_a_20180709'
-# get_test_x(file,'test_gray.csv','test_img_name.csv')
+file='C:\\homework\\xuelang_round1_test_a_20180709'
+#get_test_x(file,'test_gray.csv','test_img_name.csv')            #当文件夹已经生成的时候需要注释该语句
 #预测得到的结果保存到csv文件中
-# x_test=np.array(pd.read_csv('C:\\homework\\tianchi\\test_gray.csv',header = None))
-# x_test=StandardScaler().fit_transform(x_test)
-#
-# y_test=clf.predict(x_test)
-# prob=clf.predict_proba(x_test)
-# #获取概率的最大值
-# prob_max=[]
-# for i in range(len(prob)):
-#     prob_max.append(max(prob[i]))
-#
-# print(y_test)
-#
-# print(prob_max)
-# print('完毕')
-# #将文件的名称和可能性拼接成一个完整的csv文件
-# img_test_name=np.array(pd.read_csv('C:\\homework\\tianchi\\test_img_name.csv',header = None))
-# #获取两者的shape
-# print(img_test_name.shape)
-# prob_max=np.array(prob_max)
-# prob_max=prob_max.reshape(662,1)
-#
-# print(prob_max.shape)
-#
-# result=np.hstack([img_test_name,prob_max])
-# head=['filename','probability']
-# #result=np.vstack(head,result)
-# result=pd.DataFrame(result)
-# result.to_csv('C:\\homework\\tianchi\\result.csv', mode='a', header=head, index=None)
-# print('结果输出完毕')
+x_test=np.array(pd.read_csv('C:\\homework\\tianchi\\test_gray.csv',header = None))
+x_test=StandardScaler().fit_transform(x_test)
+
+y_test=clf.predict(x_test)
+prob=clf.predict_proba(x_test)
+print(x_test.shape)
+print(len(prob))
+#获取概率的最大值
+prob_max=[]
+for i in range(len(prob)):
+    prob_max.append(max(prob[i]))
+
+print(y_test)
+
+print(prob_max)
+print('完毕')
+#将文件的名称和可能性拼接成一个完整的csv文件
+img_test_name=np.array(pd.read_csv('C:\\homework\\tianchi\\test_img_name.csv',header = None))
+#获取两者的shape
+print(img_test_name.shape)
+prob_max=np.array(prob_max)
+print(prob_max.shape)
+prob_max=prob_max.reshape(662,1)
+
+print(prob_max.shape)
+
+result=np.hstack([img_test_name,prob_max])
+head=['filename','probability']
+#result=np.vstack(head,result)
+result=pd.DataFrame(result)
+result.to_csv('C:\\homework\\tianchi\\result1.csv', mode='a', header=head, index=None)
+print('结果输出完毕')
 
 
 
